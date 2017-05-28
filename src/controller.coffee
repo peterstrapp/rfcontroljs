@@ -8,7 +8,7 @@ protocols = [
   'switch18', 'switch19', 'switch20', 'switch21', 'switch22', 'switch23', 'switch24', 'switch25'
   'switch26', 'switch27', 'switch28', 'switch29', 'switch30'
   'rolling1'
-  'dimmer1', 'dimmer2'
+  'dimmer1', 'dimmer2', 'dimmer3'
   'pir1', 'pir2', 'pir3', 'pir4', 'pir5', 'pir6'
   'contact1', 'contact2', 'contact3', 'contact4'
   'generic', 'generic2'
@@ -46,7 +46,7 @@ sortIndices = (array) ->
   for tuple, j in tuples
     indices[tuple[1]] = j
   return indices
-  
+
 
 module.exports = {
   debug: false
