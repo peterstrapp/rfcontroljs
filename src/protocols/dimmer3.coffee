@@ -1,12 +1,12 @@
 module.exports = (helper) ->
   pulsesToBinaryMapping = {
-    '01': '1' #binary 1
-    '02': '0' #binary 0
-    '03': ''  #footer
+    '00': '1' #binary 1
+    '01': '0' #binary 0
+    '02': ''  #footer
   }
   binaryToPulse = {
-    '0': '02'
-    '1': '01'
+    '0': '01'
+    '1': '00'
   }
   return protocolInfo = {
     name: 'dimmer3'
@@ -26,41 +26,33 @@ module.exports = (helper) ->
     pulseLengths: [296, 204, 1212, 11156]
     pulseCount: 144
     decodePulses: (pulses) ->
+      message = []
       # we first map the sequences to binary
       binary = helper.map(pulses, pulsesToBinaryMapping)
-      console.log(binary);
+      console.log(binary)
 
-      dimlevel = nibbleToNumber(helper.binaryToNumber(binary, 1, 7)) * 16
-      dimlevel += nibbleToNumber(helper.binaryToNumber(binary, 8, 14))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 1, 7)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 8, 14)))
 
-      unitCode = nibbleToNumber(helper.binaryToNumber(binary, 15, 21))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 15, 21)))
 
-      nstate = nibbleToNumber(helper.binaryToNumber(binary, 22, 28))
-      if nstate
-        state = true
-      else
-        state = false
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 22, 28)))
 
-      remoteCode = nibbleToNumber(helper.binaryToNumber(binary, 29, 35)) * 1048576
-      remoteCode += nibbleToNumber(helper.binaryToNumber(binary, 36, 42)) * 65536
-      remoteCode += nibbleToNumber(helper.binaryToNumber(binary, 43, 49)) * 4096
-      remoteCode += nibbleToNumber(helper.binaryToNumber(binary, 50, 56)) * 256
-      remoteCode += nibbleToNumber(helper.binaryToNumber(binary, 57, 63)) * 16
-      remoteCode += nibbleToNumber(helper.binaryToNumber(binary, 64, 70))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 29, 35)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 36, 42)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 43, 49)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 50, 56)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 57, 63)))
+      message.push(nibbleToNumber(helper.binaryToNumber(binary, 64, 70)))
 
-      return result = {
-        remoteCode: remoteCode,
-        unitCode: unitCode,
-        state: state,
-        dimlevel: dimlevel
-      }
+      return result = message
     encodeMessage: (message) ->
       # [9,15,0,1,1,7,1,15,9,0]
       level1 = helper.map(helper.numberToBinary(numberToNibble(message[0]), 7), binaryToPulse)
       level2 = helper.map(helper.numberToBinary(numberToNibble(message[1]), 7), binaryToPulse)
 
       unitCode = helper.map(helper.numberToBinary(numberToNibble(message[2]), 7), binaryToPulse)
-      state = helper.map(helper.numberToBinary(message[3], 7), binaryToPulse)
+      state = helper.map(helper.numberToBinary(numberToNibble(message[3]), 7), binaryToPulse)
 
       id1 = helper.map(helper.numberToBinary(numberToNibble(message[4]), 7), binaryToPulse)
       id2 = helper.map(helper.numberToBinary(numberToNibble(message[5]), 7), binaryToPulse)
@@ -69,7 +61,7 @@ module.exports = (helper) ->
       id5 = helper.map(helper.numberToBinary(numberToNibble(message[8]), 7), binaryToPulse)
       id6 = helper.map(helper.numberToBinary(numberToNibble(message[9]), 7), binaryToPulse)
 
-      return "01#{level1}#{level2}#{unitCode}#{state}#{id1}#{id2}#{id3}#{id4}#{id5}#{id6}03"
+      return "00#{level1}#{level2}#{unitCode}#{state}#{id1}#{id2}#{id3}#{id4}#{id5}#{id6}02"
   }
 
 nibbleToNumber = (nibble) ->
