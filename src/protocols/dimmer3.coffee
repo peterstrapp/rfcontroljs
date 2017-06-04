@@ -23,7 +23,7 @@ module.exports = (helper) ->
         min: 0
         max: 31
     brands: ["LightwaveRF"]
-    pulseLengths: [296, 204, 1212, 11156]
+    pulseLengths: [296, 1212, 11156] 
     pulseCount: 144
     decodePulses: (pulses) ->
       message = []
